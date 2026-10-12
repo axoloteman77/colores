@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teoría del color</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Nunito:wght@400;700&display=swap">
+<style>
+@property --c1{syntax:'<color>';inherits:true;initial-value:#FFE600}
+@property --c2{syntax:'<color>';inherits:true;initial-value:#FF7A00}
+@property --c3{syntax:'<color>';inherits:true;initial-value:#D6246E}
+@property --c4{syntax:'<color>';inherits:true;initial-value:#5A3FC0}
+@property --c5{syntax:'<color>';inherits:true;initial-value:#2BB673}
+:root{--c1:#FFE600;--c2:#FF7A00;--c3:#D6246E;--c4:#5A3FC0;--c5:#2BB673;--ink:#1d1530;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100vh;font-family:'Nunito',system-ui,sans-serif;color:var(--ink);
+background:linear-gradient(135deg,color-mix(in srgb,var(--c1) 80%,white),color-mix(in srgb,var(--c2) 80%,white) 28%,color-mix(in srgb,var(--c3) 80%,white) 52%,color-mix(in srgb,var(--c4) 80%,white) 76%,color-mix(in srgb,var(--c5) 80%,white));
+background-attachment:fixed;transition:--c1 .7s,--c2 .7s,--c3 .7s,--c4 .7s,--c5 .7s}
+.wrap{max-width:1280px;margin:0 auto;padding:24px 20px 40px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;background:rgba(255,255,255,.78);border-radius:20px;padding:16px 24px;backdrop-filter:blur(8px)}
+h1{margin:0;font-family:'Fredoka',sans-serif;font-size:clamp(34px,6vw,60px);line-height:1;letter-spacing:.5px}
+h1 span:nth-child(5n+1){color:#E5202B}h1 span:nth-child(5n+2){color:#E08A00}h1 span:nth-child(5n+3){color:#1B8A4B}h1 span:nth-child(5n+4){color:#2F6FE0}h1 span:nth-child(5n){color:#8E2DA8}
+.sub{margin:6px 0 0;font-size:16px;max-width:560px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+button{font:700 15px 'Nunito',sans-serif;min-height:44px;padding:0 18px;border:0;border-radius:999px;background:var(--ink);color:#fff;cursor:pointer}
+button:hover{opacity:.88}button:focus-visible,svg:focus-visible{outline:3px solid #fff;outline-offset:2px;box-shadow:0 0 0 6px var(--ink)}
+main{display:grid;grid-template-columns:1fr minmax(320px,560px) 1fr;gap:24px;align-items:center;margin-top:22px}
+.col{display:flex;flex-direction:column;gap:16px}
+.card{background:rgba(255,255,255,.8);border-radius:16px;padding:16px;backdrop-filter:blur(8px)}
+.tag{display:inline-block;color:#fff;font:700 15px 'Fredoka',sans-serif;padding:4px 14px;border-radius:6px;letter-spacing:.5px}
+.card p{margin:8px 0 10px;font-size:14px;line-height:1.35}
+.dots{display:flex;gap:10px;flex-wrap:wrap}
+.dots i{width:30px;height:30px;border-radius:50%;display:block;border:2px solid rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(0,0,0,.25)}
+#wheel{width:100%;height:auto;touch-action:none;cursor:grab;display:block;filter:drop-shadow(0 12px 28px rgba(29,21,48,.3))}
+#wheel.drag{cursor:grabbing}
+.picked{background:var(--ink);color:#fff}
+.picked h2{margin:0 0 10px;font:500 17px 'Fredoka',sans-serif}
+.pk{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;margin:6px 0}
+.pk i{width:38px;height:26px;border-radius:7px;flex:none;border:2px solid #fff}
+.pk small{opacity:.8;font-weight:400;margin-left:auto}
+footer{margin-top:24px;text-align:center;font-size:17px;background:rgba(255,255,255,.78);border-radius:16px;padding:14px 20px}
+@media(max-width:900px){main{grid-template-columns:1fr}.col.l{order:2}.col.r{order:3}main>div.w{order:1}}
+@media(prefers-reduced-motion:reduce){body{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div>
+<h1 id="t" aria-label="Teoría del color"></h1>
+<p class="sub">Arrastra el pentágono para girarlo por la rueda cromática: el fondo de la página cambia con los colores que elijas.</p>
+</div>
+<div class="btns"><button id="rnd">Aleatorio</button><button id="rst">Reiniciar</button></div>
+</header>
+
+<main>
+<div class="col l">
+<div class="card"><span class="tag" style="background:#8E2DA8">MATIZ</span><p>La cualidad que nos permite diferenciar un color de otro. Estos son los matices que elegiste.</p><div class="dots" id="d-matiz"></div></div>
+<div class="card"><span class="tag" style="background:#C2410C">LUMINOSIDAD</span><p>Qué tan claro u oscuro percibimos un color (del primer color elegido).</p><div class="dots" id="d-lum"></div></div>
+<div class="card"><span class="tag" style="background:#B3261E">COMPLEMENTARIOS</span><p>El color contrario en el círculo cromático al primer color elegido.</p><div class="dots" id="d-comp"></div></div>
+</div>
+
+<div class="w">
+<svg id="wheel" viewBox="0 0 600 600" tabindex="0" role="slider" aria-label="Girar el pentágono de colores" aria-valuemin="0" aria-valuemax="360" aria-valuenow="0">
+<g id="ring"></g>
+<circle cx="300" cy="300" r="200" fill="rgba(255,255,255,.82)"/>
+<g id="shape">
+<polygon points="150,10 100,150 200,150" fill="#FFE600"/>
+<polygon points="150,10 17,107 68,230 100,150" fill="#2BB673"/>
+<polygon points="150,10 283,107 232,230 200,150" fill="#F2531F"/>
+<polygon points="100,150 150,150 150,230 68,230" fill="#4AA8E0"/>
+<polygon points="150,150 200,150 232,230 150,230" fill="#E5328E"/>
+<polygon points="68,230 232,230 150,292" fill="#4A1FA8"/>
+<text class="lb" x="193" y="200" fill="#fff" font-weight="700" font-size="13" text-anchor="middle" font-family="Nunito,sans-serif">Primarios</text>
+<text class="lb" x="150" y="254" fill="#fff" font-weight="700" font-size="12" text-anchor="middle" font-family="Nunito,sans-serif">Secundarios</text>
+</g>
+<g id="pins"></g>
+</svg>
+</div>
+
+<div class="col r">
+<div class="card"><span class="tag" style="background:#1F3FD0">SATURACIÓN</span><p>Qué tan vivo o pálido percibimos un color. Más gris, menos saturación.</p><div class="dots" id="d-sat"></div></div>
+<div class="card"><span class="tag" style="background:#1B8A4B">ANÁLOGOS</span><p>Los colores que están a ambos lados del primer color elegido.</p><div class="dots" id="d-ana"></div></div>
+<div class="card picked"><h2>Colores elegidos</h2><div id="picked"></div></div>
+</div>
+</main>
+<footer>La armonía de colores se logra conociendo las combinaciones, proporciones e implementaciones de los colores complementarios y análogos.</footer>
+</div>
+
+<script>
+(function(){
+var COL=['#FFE600','#FFB300','#FF7A00','#F2481F','#E5202B','#D6246E','#8E2DA8','#5A3FC0','#2F6FE0','#1FA6C9','#2BB673','#A6D93A'];
+var NAM=['Amarillo','Amarillo anaranjado','Naranja','Rojo anaranjado','Rojo','Rojo violáceo','Violeta','Azul violáceo','Azul','Azul verdoso','Verde','Verde amarillento'];
+var OFF=[0,72,134,226,288];
+var NS='http://www.w3.org/2000/svg',C=300;
+var svg=document.getElementById('wheel'),rot=0;
+document.getElementById('t').innerHTML='Teoría del color'.split('').map(function(c){return c===' '?' ':'<span aria-hidden="true">'+c+'</span>'}).join('');
+function pt(R,a){a=a*Math.PI/180;return (C+R*Math.sin(a)).toFixed(2)+' '+(C-R*Math.cos(a)).toFixed(2)}
+var ring=document.getElementById('ring');
+COL.forEach(function(c,k){var a0=k*30-15,a1=k*30+15,p=document.createElementNS(NS,'path');
+p.setAttribute('d','M'+pt(290,a0)+' A290 290 0 0 1 '+pt(290,a1)+' L'+pt(200,a1)+' A200 200 0 0 0 '+pt(200,a0)+' Z');
+p.setAttribute('fill',c);p.setAttribute('stroke','#fff');p.setAttribute('stroke-width','1.5');ring.appendChild(p)});
+var pins=document.getElementById('pins'),pinEls=OFF.map(function(){var g=document.createElementNS(NS,'circle');g.setAttribute('r','16');g.setAttribute('stroke','#fff');g.setAttribute('stroke-width','5');g.setAttribute('pointer-events','none');pins.appendChild(g);return g});
+var shape=document.getElementById('shape'),labels=shape.querySelectorAll('.lb');
+function mix(c,w,pct){return 'color-mix(in srgb,'+c+' '+pct+'%,'+w+')'}
+function dots(id,arr){document.getElementById(id).innerHTML=arr.map(function(c){return '<i style="background:'+c+'"></i>'}).join('')}
+function update(){
+ rot=((rot%360)+360)%360;
+ shape.setAttribute('transform','translate(300 300) rotate('+rot+') scale(1.18) translate(-150 -150)');
+ labels.forEach(function(t){var x=+t.getAttribute('x'),y=+t.getAttribute('y');t.setAttribute('transform','rotate('+(-rot)+' '+x+' '+y+')')});
+ var idx=OFF.map(function(o){return (Math.round((o+rot)/30)%12+12)%12});
+ var root=document.documentElement.style;
+ idx.forEach(function(k,i){root.setProperty('--c'+(i+1),COL[k]);
+  var a=OFF[i]+rot,p=pt(245,a).split(' ');pinEls[i].setAttribute('cx',p[0]);pinEls[i].setAttribute('cy',p[1]);pinEls[i].setAttribute('fill',COL[k])});
+ var b=COL[idx[0]];
+ dots('d-matiz',idx.map(function(k){return COL[k]}));
+ dots('d-lum',[mix(b,'black',45),mix(b,'black',75),b,mix(b,'white',60),mix(b,'white',30)]);
+ dots('d-comp',[b,COL[(idx[0]+6)%12]]);
+ dots('d-sat',[mix(b,'#808080',25),mix(b,'#808080',55),mix(b,'#808080',80),b]);
+ dots('d-ana',[COL[(idx[0]+11)%12],b,COL[(idx[0]+1)%12]]);
+ document.getElementById('picked').innerHTML=idx.map(function(k){return '<div class="pk"><i style="background:'+COL[k]+'"></i>'+NAM[k]+'<small>'+COL[k]+'</small></div>'}).join('');
+ svg.setAttribute('aria-valuenow',Math.round(rot));
+}
+function ang(e){var r=svg.getBoundingClientRect();return Math.atan2(e.clientX-(r.left+r.width/2),-(e.clientY-(r.top+r.height/2)))*180/Math.PI}
+var a0=0,r0=0,on=false;
+svg.addEventListener('pointerdown',function(e){on=true;a0=ang(e);r0=rot;svg.setPointerCapture(e.pointerId);svg.classList.add('drag')});
+svg.addEventListener('pointermove',function(e){if(!on)return;rot=r0+(ang(e)-a0);update()});
+['pointerup','pointercancel'].forEach(function(n){svg.addEventListener(n,function(){on=false;svg.classList.remove('drag')})});
+svg.addEventListener('keydown',function(e){var s=e.shiftKey?30:5;if(e.key==='ArrowRight'||e.key==='ArrowUp'){rot+=s}else if(e.key==='ArrowLeft'||e.key==='ArrowDown'){rot-=s}else return;e.preventDefault();update()});
+document.getElementById('rnd').onclick=function(){rot=Math.random()*360;update()};
+document.getElementById('rst').onclick=function(){rot=0;update()};
+update();
+})();
+</script>
+</body>
+</html>
